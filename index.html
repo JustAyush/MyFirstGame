@@ -1,0 +1,265 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="gm.js"> </script>
+  <title> Agame </title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body onload="firstthing()">
+
+  <h1>Catch Spidey! <span class="score">0</span></h1>
+
+  <div class="modal">
+      <div class="modal-content" id="modal1">
+          <p id="comment1"> </p>
+          <p id="comment"> </p><br/>
+          <div class="parentElement">
+          <button class="start-button" onClick="startGame()">Start!</button>
+          <button class="about-button" onClick="aboutGame()"> About </button>
+          </div>
+          <label class="container">
+            <input type="radio" name="level" id="r1" value="Easy" checked="checked"> Easy
+            <span class="checkmark"></span>
+          </label>
+          <label class="container">
+            <input type="radio" name="level" id="r2" value="Normal" required> Normal
+            <span class="checkmark"></span>
+          </label>
+          <label class="container">
+              <input type="radio" class="rb" name="level" id="r3" value="Hard" required> Hard
+              <span class="checkmark"></span>
+          </label>
+      </div>
+
+      <div class = "modal-content" id="modal2">
+        <span class="close-button">×</span>
+        <p class="content1"> Catch Spidey!</p>
+        <p class="content2"> Catch as much spideys as you can. There are 15 of them and they say 'Oww' when they get caught. </p>
+        <p class="content3"> Author: Ayush Bajracharya<br>Date: Sep 23, 2018<br>Music: Elektronomia & JJD<br>
+        Couldn't be for grateful for <br> w3schools.com <br> Wes Bos's YT channel <br>
+        Some part of code were recklessly stolen from <br> sabe.io <br> wesbos's github account<br> <span style="font-size: 10px;"> (They are both open source btw) </span>
+        </p>
+      </div>
+
+      <div class="modal-content" id="modal3">
+        <h2 style="color:#ffb92d; text-align:center;"> Wasn't made mobile first. Sorry.</h2>
+      </div>
+
+  </div>
+
+  <div class="game" id="h">
+    <div class="hole hole1">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole2">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole3">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole4">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole5">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole6">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole7">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole8">
+      <div class="mole"></div>
+    </div>
+  </div>
+
+<script>
+
+const holes = document.querySelectorAll('.hole');
+const scoreBoard = document.querySelector('.score');
+const moles = document.querySelectorAll('.mole');
+var closeButton = document.querySelector(".close-button");
+let lastHole,a,b;
+let timeUp = false;
+let score = 0;
+let formodal = true;
+let peepcount = 0;
+let firstc = 0;
+var music, shot;
+
+
+function randomTime(min, max) {
+   return Math.round(Math.random() * (max - min) + min);
+ }
+
+function randomHole(holes) {
+  const idx = Math.floor(Math.random() * holes.length);
+  const hole = holes[idx];
+  if (hole === lastHole) {
+    return randomHole(holes);
+  }
+  lastHole = hole;
+  return hole;
+}
+
+function peep() {
+  peepcount++;
+  if(peepcount <=15){
+  if(document.getElementById('r1').checked){
+    a = 800;
+    b = 950;
+  }
+  else if(document.getElementById('r2').checked){
+    a = 600;
+    b = 800;
+  }
+  else{
+    a = 400;
+    b = 700;
+  }
+
+  const time = randomTime(a,b);
+  const hole = randomHole(holes);
+  hole.classList.add('up');
+  setTimeout(() => {
+      hole.classList.remove('up');
+      if (!timeUp) peep();
+    }, time);
+  }
+  else{
+    timeUp = true;
+    setTimeout(function(){
+      peepcount = 0;
+      toggleModal();
+      timeUp = false;
+    },600);
+  }
+
+}
+
+function startGame() {
+  scoreBoard.textContent = 0;
+  timeUp = false;
+  score = 0;
+  peep();
+
+  //setTimeout(() => timeUp = true, 10000)
+}
+
+function bonk(e) {
+  startShot();
+  if(!e.isTrusted) return; // cheater!
+  score++;
+  this.parentNode.classList.remove('up');
+  scoreBoard.textContent = score;
+}
+
+moles.forEach(mole => mole.addEventListener('click', bonk));
+
+
+var modal = document.querySelector(".modal");
+var trigger = document.querySelector(".trigger");
+var startButton = document.querySelector(".start-button");
+
+function toggleModal() {
+    modal.classList.toggle("show-modal");
+    if(formodal == true){
+      document.getElementById("h").style.visibility = "hidden";
+      document.getElementById("modal3").style.visibility = "hidden";
+      document.getElementById("modal2").style.visibility = "hidden";
+      document.getElementById("modal1").style.visibility = "visible";
+      formodal = false;
+      startMusic();
+    }
+    else{
+      document.getElementById("h").style.visibility = "visible";
+      formodal = true;
+      stopMusic();
+    }
+    if(firstc ==1){
+        document.getElementById("comment1").innerHTML = "Got " + score + " of them" ;
+      if(score<=5)
+        document.getElementById("comment").innerHTML = "You can do better";
+      else if(score>6 && score<13)
+        document.getElementById("comment").innerHTML = "You did good";
+      else
+        document.getElementById("comment").innerHTML = "How the hell did you do that! Great!!";
+    }
+    else{
+        document.getElementById("comment").innerHTML = "Are you ready?";
+    }
+
+}
+
+function firstthing(){
+  toggleModal();
+  firstc = 1;
+}
+
+function stopMusic(){
+  music.stop();
+}
+
+function startMusic(){
+  music = new sound('music/Electro.mp3');
+  music.play();
+}
+
+function startShot(){
+  shot = new sound('music/shot.mp3');
+  shot.play();
+}
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
+}
+
+function aboutGame(){
+  document.getElementById("modal1").style.visibility = "hidden";
+  document.getElementById("modal2").style.visibility = "visible";
+  document.getElementById("modal3").style.visibility = "hidden";
+}
+
+function fromAbout(){
+  document.getElementById("modal1").style.visibility = "visible";
+  document.getElementById("modal2").style.visibility = "hidden";
+  document.getElementById("modal3").style.visibility = "hidden";
+}
+
+startButton.addEventListener("click", toggleModal);
+closeButton.addEventListener("click", fromAbout);
+
+//Media Queries
+var x = window.matchMedia("(max-width: 900px)")
+myFunction(x) // Call listener function at run time
+x.addListener(myFunction) // Attach listener function on state changes
+
+function myFunction(x) {
+    if (x.matches) { // If media query matches
+      document.getElementById("modal1").style.visibility = "hidden";
+      document.getElementById("modal2").style.visibility = "hidden";
+      document.getElementById("modal3").style.visibility = "visible";
+    } else {
+      document.getElementById("modal1").style.visibility = "visible";
+      document.getElementById("modal2").style.visibility = "hidden";
+      document.getElementById("modal3").style.visibility = "hidden";
+    }
+}
+
+</script>
+
+</body>
+</html>
