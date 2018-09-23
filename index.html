@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript" src="gm.js"> </script>
   <title> Agame </title>
   <link rel="stylesheet" href="style.css">
@@ -89,6 +90,7 @@ let formodal = true;
 let peepcount = 0;
 let firstc = 0;
 var music, shot;
+var x = window.matchMedia("(max-width: 900px)")
 
 
 function randomTime(min, max) {
@@ -197,6 +199,8 @@ function toggleModal() {
 function firstthing(){
   toggleModal();
   firstc = 1;
+  myFunction(x) // Call listener function at run time
+  x.addListener(myFunction) // Attach listener function on state changes
 }
 
 function stopMusic(){
